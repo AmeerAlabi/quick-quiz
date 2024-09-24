@@ -1,14 +1,10 @@
 import Link from 'next/link'
-import { motion } from 'framer-motion'
-// import { Button } from "@/components/ui/button"
 
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex flex-col items-center justify-center p-4 text-center">
       <div
-        // initial={{ opacity: 0, y: -20 }}
-        // animate={{ opacity: 1, y: 0 }}
-        // transition={{ duration: 0.5 }}
+      
         className="max-w-2xl"
       >
         <h1 className="text-5xl font-bold text-teal-400 mb-4">Welcome to Quick-Quiz </h1>
