@@ -32,7 +32,6 @@ const QuizSetup: React.FC<QuizSetupProps> = () => {
         </div>
 
         <div className="space-y-6 mt-6">
-          {/* Category */}
           <div>
             <label htmlFor="category" className="block text-gray-300 mb-2">
               Category
@@ -54,7 +53,6 @@ const QuizSetup: React.FC<QuizSetupProps> = () => {
             </select>
           </div>
 
-          {/* Difficulty */}
           <div>
             <label htmlFor="difficulty" className="block text-gray-300 mb-2">
               Difficulty
@@ -74,7 +72,6 @@ const QuizSetup: React.FC<QuizSetupProps> = () => {
             </select>
           </div>
 
-          {/* Question Count */}
           <div>
             <label htmlFor="questionCount" className="block text-gray-300 mb-2">
               Number of Questions: {questionCount}
@@ -92,7 +89,6 @@ const QuizSetup: React.FC<QuizSetupProps> = () => {
           </div>
         </div>
 
-        {/* Start Quiz Button */}
         <button
           onClick={handleStartQuiz}
           className={`w-full mt-6 py-3 bg-teal-500 text-gray-900 rounded-lg transition-colors duration-200 hover:bg-teal-600 ${

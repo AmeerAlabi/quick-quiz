@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 
-// TypeScript interfaces for the question structure
 interface Question {
   id: number;
   question: string;
@@ -12,7 +11,6 @@ interface Question {
   correctAnswer: string;
 }
 
-// Fetch trivia questions with retry logic (using exponential backoff)
 async function fetchTriviaQuestions(
   category: string,
   difficulty: string,
@@ -72,31 +70,25 @@ export default function QuizPage() {
       return () => clearInterval(timerId);
     } else if (timeLeft === 0) {
       handleAnswer(); 
-      // Move to next question when time runs out
     }
   }, [timeLeft, quizEnded]);
 
-  // Handle user answer submission
   const handleAnswer = () => {
-    // Save the user's answer
     setUserAnswers([...userAnswers, selectedAnswer]);
 
-    // Check if the answer is correct
     if (selectedAnswer === questions[currentQuestion].correctAnswer) {
       setScore(score + 1);
     }
 
-    // Move to the next question or end the quiz
     if (currentQuestion + 1 < questions.length) {
       setCurrentQuestion(currentQuestion + 1);
       setSelectedAnswer("");
-      setTimeLeft(30); // Reset the timer for the next question
+      setTimeLeft(30);
     } else {
       setQuizEnded(true);
     }
   };
 
-  // Display correct answers at the end of the quiz
   const handleShowAnswers = () => {
     setShowCorrectAnswers(true);
   };
