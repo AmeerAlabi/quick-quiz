@@ -4,9 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 
-interface QuizSetupProps {}
-
-const QuizSetup: React.FC<QuizSetupProps> = () => {
+const QuizSetup: React.FC = () => {
   const [category, setCategory] = useState<string>("");
   const [difficulty, setDifficulty] = useState<string>("");
   const [questionCount, setQuestionCount] = useState<number>(10);
