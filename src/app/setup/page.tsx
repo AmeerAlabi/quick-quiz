@@ -1,23 +1,22 @@
-// app/quiz-setup/page.tsx (if you're using Next.js app directory)
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from 'next/navigation'
-import { motion } from "framer-motion"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 
 interface QuizSetupProps {}
 
 const QuizSetup: React.FC<QuizSetupProps> = () => {
-  const [category, setCategory] = useState<string>("")
-  const [difficulty, setDifficulty] = useState<string>("")
-  const [questionCount, setQuestionCount] = useState<number>(10)
-  const router = useRouter()
+  const [category, setCategory] = useState<string>("");
+  const [difficulty, setDifficulty] = useState<string>("");
+  const [questionCount, setQuestionCount] = useState<number>(10);
+  const router = useRouter();
 
   const handleStartQuiz = () => {
     if (category && difficulty) {
-      router.push(`/quiz?category=${category}&difficulty=${difficulty}&count=${questionCount}`)
+      router.push(`/quiz?category=${category}&difficulty=${difficulty}&count=${questionCount}`);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center p-4">
@@ -35,32 +34,40 @@ const QuizSetup: React.FC<QuizSetupProps> = () => {
         <div className="space-y-6 mt-6">
           {/* Category */}
           <div>
-            <label htmlFor="category" className="block text-gray-300 mb-2">Category</label>
+            <label htmlFor="category" className="block text-gray-300 mb-2">
+              Category
+            </label>
             <select
               id="category"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
               className="w-full bg-gray-700 text-gray-200 border border-gray-600 px-5 py-3 rounded-lg focus:ring-2 focus:ring-teal-500"
             >
-              <option value="" disabled>Select a category</option>
-              <option value="general">General Knowledge</option>
-              <option value="science">Science</option>
-              <option value="history">History</option>
-              <option value="geography">Geography</option>
-              <option value="entertainment">Entertainment</option>
+              <option value="" disabled>
+                Select a category
+              </option>
+              <option value="9">General Knowledge</option>
+              <option value="17">Science & Nature</option>
+              <option value="23">History</option>
+              <option value="22">Geography</option>
+              <option value="11">Entertainment: Film</option>
             </select>
           </div>
 
           {/* Difficulty */}
           <div>
-            <label htmlFor="difficulty" className="block text-gray-300 mb-2">Difficulty</label>
+            <label htmlFor="difficulty" className="block text-gray-300 mb-2">
+              Difficulty
+            </label>
             <select
               id="difficulty"
               value={difficulty}
               onChange={(e) => setDifficulty(e.target.value)}
               className="w-full bg-gray-700 text-gray-200 border border-gray-600 px-5 py-3 rounded-lg focus:ring-2 focus:ring-teal-500"
             >
-              <option value="" disabled>Select difficulty</option>
+              <option value="" disabled>
+                Select difficulty
+              </option>
               <option value="easy">Easy</option>
               <option value="medium">Medium</option>
               <option value="hard">Hard</option>
@@ -88,14 +95,16 @@ const QuizSetup: React.FC<QuizSetupProps> = () => {
         {/* Start Quiz Button */}
         <button
           onClick={handleStartQuiz}
-          className={`w-full mt-6 py-3 bg-teal-500 text-gray-900 rounded-lg transition-colors duration-200 hover:bg-teal-600 ${(!category || !difficulty) && 'opacity-50 cursor-not-allowed'}`}
+          className={`w-full mt-6 py-3 bg-teal-500 text-gray-900 rounded-lg transition-colors duration-200 hover:bg-teal-600 ${
+            (!category || !difficulty) && "opacity-50 cursor-not-allowed"
+          }`}
           disabled={!category || !difficulty}
         >
           Start Quiz
         </button>
       </motion.div>
     </div>
-  )
-}
+  );
+};
 
-export default QuizSetup
+export default QuizSetup;
