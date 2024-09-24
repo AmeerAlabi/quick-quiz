@@ -27,7 +27,7 @@ async function fetchTriviaQuestions(
       if (response.status === 429 && retries > 0) {
         console.warn(`Rate limit hit. Retrying in ${backoff}ms...`);
         await new Promise((resolve) => setTimeout(resolve, backoff));
-        return fetchTriviaQuestions(category, difficulty, count, retries - 1, Math.min(backoff * 2, 30000));
+        return fetchTriviaQuestions(category, difficulty, count, retries - 1, Math.min(backoff * 2, 1000));
       }
       throw new Error(`Error: ${response.status}`);
     }
@@ -44,6 +44,13 @@ async function fetchTriviaQuestions(
   }
 }
 
+function decodeHTML(html: string) {
+  const txt = document.createElement("textarea");
+  txt.innerHTML = html;
+  return txt.value;
+}
+
+
 function QuizComponent() {
   const searchParams = useSearchParams();
   const category = searchParams.get("category") || "9";
@@ -58,6 +65,7 @@ function QuizComponent() {
   const [timeLeft, setTimeLeft] = useState<number>(10);
   const [showCorrectAnswers, setShowCorrectAnswers] = useState<boolean>(false);
   const [userAnswers, setUserAnswers] = useState<string[]>([]);
+  const [answerChecked, setAnswerChecked] = useState<boolean>(false); // To check if answers have been checked
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -83,12 +91,16 @@ function QuizComponent() {
   }, [timeLeft, quizEnded]);
 
   const handleAnswer = () => {
+    setAnswerChecked(true);
     setUserAnswers([...userAnswers, selectedAnswer]);
 
     if (selectedAnswer === questions[currentQuestion]?.correctAnswer) {
       setScore(score + 1);
     }
+  };
 
+  const handleNext = () => {
+    setAnswerChecked(false); // Reset answer check for next question
     if (currentQuestion + 1 < questions.length) {
       setCurrentQuestion(currentQuestion + 1);
       setSelectedAnswer("");
@@ -124,31 +136,51 @@ function QuizComponent() {
         transition={{ duration: 0.5 }}
       >
         {!quizEnded ? (
-          <div className="text-white">
-            <h1 className="text-2xl mb-4">{questions[currentQuestion].question}</h1>
-            <div className="mb-4">
-              {questions[currentQuestion].options.map((option, idx) => (
-                <button
-                  key={idx}
-                  className={`block mb-2 p-2 w-full text-left rounded ${
-                    selectedAnswer === option
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-700 text-gray-300"
-                  }`}
-                  onClick={() => setSelectedAnswer(option)}
-                >
-                  {option}
-                </button>
-              ))}
-            </div>
-            <p>Time left: {timeLeft} seconds</p>
-            <button
-              className="mt-4 p-2 bg-teal-500 text-white rounded"
-              onClick={handleAnswer}
-              disabled={!selectedAnswer}
-            >
-              Next
-            </button>
+          <div className="text-white"> 
+            {/* <div className="mb-4"> */}
+            <h1 className="text-2xl mb-4">
+  {decodeHTML(questions[currentQuestion].question)}
+</h1>
+<div className="mb-4">
+  {questions[currentQuestion].options.map((option, idx) => (
+    <button
+      key={idx}
+      className={`block mb-2 p-2 w-full text-left rounded ${
+        answerChecked
+          ? option === questions[currentQuestion].correctAnswer
+            ? "bg-green-600 text-white" // Correct answer marked green
+            : option === selectedAnswer
+            ? "bg-red-600 text-white" // Incorrect selected answer marked red
+            : "bg-gray-700 text-gray-300" // Unselected option
+          : selectedAnswer === option
+          ? "bg-teal-600 text-white" // Active option (before submission)
+          : "bg-gray-700 text-gray-300" // Default option styling
+      }`}
+      onClick={() => setSelectedAnswer(option)}
+      disabled={answerChecked} // Disable buttons after answer is checked
+    >
+      {decodeHTML(option)} {/* Decode option text here */}
+    </button>
+  ))}
+</div>
+<p>Time left: {timeLeft} seconds</p>
+{!answerChecked ? (
+  <button
+    className="mt-4 p-2 bg-teal-500 text-white rounded"
+    onClick={handleAnswer}
+    disabled={!selectedAnswer}
+  >
+    Submit Answer
+  </button>
+) : (
+  <button
+    className="mt-4 p-2 bg-teal-500 text-white rounded"
+    onClick={handleNext}
+  >
+    Next
+  </button>
+)}
+
           </div>
         ) : (
           <div className="text-white">
@@ -161,14 +193,31 @@ function QuizComponent() {
               Show Correct Answers
             </button>
             {showCorrectAnswers && (
-              <ul className="mt-4">
-                {questions.map((q, idx) => (
-                  <li key={idx} className="mb-2">
-                    <strong>{q.question}</strong>: {q.correctAnswer}
-                  </li>
-                ))}
-              </ul>
-            )}
+  <ul className="mt-4">
+    {questions.map((q, idx) => {
+      const isCorrect = userAnswers[idx] === q.correctAnswer;
+      return (
+        <li key={idx} className="mb-4">
+          <strong className="block">{q.question}</strong>
+          <p
+            className={`p-2 rounded-lg mt-2 ${
+              isCorrect ? "bg-teal-600 text-white" : "bg-red-500 text-white"
+            }`}
+          >
+            Your answer: {userAnswers[idx]}{" "}
+            {isCorrect ? "(Correct)" : "(Wrong)"}
+          </p>
+          {!isCorrect && (
+            <p className="mt-1 p-2 bg-teal-500 text-white rounded">
+              Correct answer: {q.correctAnswer}
+            </p>
+          )}
+        </li>
+      );
+    })}
+  </ul>
+)}
+
           </div>
         )}
       </motion.div>
