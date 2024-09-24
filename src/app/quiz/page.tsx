@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 
@@ -16,8 +16,8 @@ async function fetchTriviaQuestions(
   category: string,
   difficulty: string,
   count: number,
-  retries = 5, // Number of retries for rate limits
-  backoff = 2000 // Backoff time (in milliseconds)
+  retries = 5,
+  backoff = 2000
 ) {
   const apiUrl = `https://opentdb.com/api.php?amount=${count}&category=${category}&difficulty=${difficulty}&type=multiple`;
 
@@ -26,8 +26,8 @@ async function fetchTriviaQuestions(
     if (!response.ok) {
       if (response.status === 429 && retries > 0) {
         console.warn(`Rate limit hit. Retrying in ${backoff}ms...`);
-        await new Promise((resolve) => setTimeout(resolve, backoff)); // Wait for the backoff period
-        return fetchTriviaQuestions(category, difficulty, count, retries - 1, Math.min(backoff * 2, 30000)); // Increase backoff, cap at 30 seconds
+        await new Promise((resolve) => setTimeout(resolve, backoff));
+        return fetchTriviaQuestions(category, difficulty, count, retries - 1, Math.min(backoff * 2, 30000));
       }
       throw new Error(`Error: ${response.status}`);
     }
@@ -40,11 +40,11 @@ async function fetchTriviaQuestions(
     }));
   } catch (error) {
     console.error("Error fetching trivia questions:", error);
-    throw error; // Re-throw error to handle it in the useEffect
+    throw error;
   }
 }
 
-export default function QuizPage() {
+function QuizComponent() {
   const searchParams = useSearchParams();
   const category = searchParams.get("category") || "9";
   const difficulty = searchParams.get("difficulty") || "easy";
@@ -58,9 +58,8 @@ export default function QuizPage() {
   const [timeLeft, setTimeLeft] = useState<number>(10);
   const [showCorrectAnswers, setShowCorrectAnswers] = useState<boolean>(false);
   const [userAnswers, setUserAnswers] = useState<string[]>([]);
-  const [error, setError] = useState<string | null>(null); // New state for error handling
+  const [error, setError] = useState<string | null>(null);
 
-  // Fetch questions on load or when parameters change
   useEffect(() => {
     if (category && difficulty && count) {
       fetchTriviaQuestions(category, difficulty, count)
@@ -72,7 +71,6 @@ export default function QuizPage() {
     }
   }, [category, difficulty, count]);
 
-  // Countdown timer for each question
   useEffect(() => {
     if (timeLeft > 0 && !quizEnded) {
       const timerId = setInterval(() => {
@@ -80,11 +78,10 @@ export default function QuizPage() {
       }, 1000);
       return () => clearInterval(timerId);
     } else if (timeLeft === 0) {
-      handleAnswer(); // Automatically handle answer when time runs out
+      handleAnswer();
     }
   }, [timeLeft, quizEnded]);
 
-  // Handle answer selection
   const handleAnswer = () => {
     setUserAnswers([...userAnswers, selectedAnswer]);
 
@@ -95,7 +92,7 @@ export default function QuizPage() {
     if (currentQuestion + 1 < questions.length) {
       setCurrentQuestion(currentQuestion + 1);
       setSelectedAnswer("");
-      setTimeLeft(30); // Reset timer for the next question
+      setTimeLeft(30);
     } else {
       setQuizEnded(true);
     }
@@ -103,7 +100,6 @@ export default function QuizPage() {
 
   const handleShowAnswers = () => setShowCorrectAnswers(true);
 
-  // Error or loading state
   if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center text-red-400">
@@ -177,5 +173,13 @@ export default function QuizPage() {
         )}
       </motion.div>
     </div>
+  );
+}
+
+export default function QuizPage() {
+  return (
+    <Suspense fallback={<div>Loading quiz...</div>}>
+      <QuizComponent />
+    </Suspense>
   );
 }
