@@ -1,3 +1,8 @@
-// {
-//   "extends": ["next/core-web-vitals", "next/typescript"]
-// }
+{
+  "extends": ["next/core-web-vitals", "next/typescript"],
+  "rules": {
+    "@typescript-eslint/no-explicit-any": "off", // Allows usage of 'any'
+    "react-hooks/exhaustive-deps": "off", // Disables the warning for missing useEffect dependencies
+    "@typescript-eslint/no-empty-interface": "off" // Allows empty interfaces
+  }
+}
