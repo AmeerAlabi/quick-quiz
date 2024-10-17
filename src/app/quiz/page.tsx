@@ -201,14 +201,14 @@ function QuizComponent() {
           <strong className="block">{q.question}</strong>
           <p
             className={`p-2 rounded-lg mt-2 ${
-              isCorrect ? "bg-teal-600 text-white" : "bg-red-500 text-white"
+              isCorrect ? "bg-green-500 text-white" : "bg-red-500 text-white"
             }`}
           >
             Your answer: {userAnswers[idx]}{" "}
             {isCorrect ? "(Correct)" : "(Wrong)"}
           </p>
           {!isCorrect && (
-            <p className="mt-1 p-2 bg-teal-500 text-white rounded">
+            <p className="mt-1 p-2 bg-green-600 text-white rounded">
               Correct answer: {q.correctAnswer}
             </p>
           )}
